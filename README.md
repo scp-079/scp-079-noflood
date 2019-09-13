@@ -13,7 +13,8 @@ See [this article](https://scp-079.org/noflood/).
 ## Requirements
 
 - Python 3.6 or higher
-- pip: `pip install -r requirements.txt` or `pip install -U APScheduler pyAesCrypt pyrogram[fast]`
+- Ubuntu: `sudo apt update && sudo apt install opencc -y`
+- pip: `pip install -r requirements.txt` or `pip install -U APScheduler OpenCC pyAesCrypt pyrogram[fast]`
 
 ## Files
 

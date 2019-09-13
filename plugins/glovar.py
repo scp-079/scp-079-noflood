@@ -247,6 +247,13 @@ bad_ids: Dict[str, Set[int]] = {
 #     "users": {12345678}
 # }
 
+except_ids: Dict[str, Set[str]] = {
+    "long": set()
+}
+# except_ids = {
+#     "long": {"content"}
+# }
+
 user_ids: Dict[int, Dict[str, Dict[Union[int, str], Union[float, int]]]] = {}
 # user_ids = {
 #     12345678: {
@@ -302,7 +309,7 @@ for word_type in regex:
 # }
 
 # Load data
-file_list: List[str] = ["admin_ids", "bad_ids", "user_ids", "watch_ids", "configs"]
+file_list: List[str] = ["admin_ids", "bad_ids", "except_ids", "user_ids", "watch_ids", "configs"]
 file_list += [f"{f}_words" for f in regex]
 for file in file_list:
     try:
