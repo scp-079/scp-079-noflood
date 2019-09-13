@@ -163,6 +163,7 @@ def terminate_user(client: Client, message: Message, context: str) -> bool:
                 glovar.recorded_ids[gid].add(uid)
                 delete_message(client, gid, mid)
                 declare_message(client, gid, mid)
+                ask_for_help(client, "delete", gid, uid)
                 previous = add_detected_user(gid, uid)
                 if not previous:
                     update_score(client, uid)
