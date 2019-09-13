@@ -24,7 +24,7 @@ from pyrogram import Chat, Client, Message
 from pyrogram.errors import FloodWait
 
 from .. import glovar
-from .etc import code, code_block, general_link, get_forward_name, get_full_name, get_md5sum, get_text, message_link
+from .etc import code, code_block, general_link, get_forward_name, get_full_name, get_text, message_link
 from .etc import thread, wait_flood
 from .file import crypt_file, data_to_file, delete_file, get_new_path, save
 from .telegram import get_group_info, send_document, send_message
