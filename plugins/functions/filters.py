@@ -244,7 +244,7 @@ def is_detected_user_id(gid: int, uid: int) -> bool:
     return False
 
 
-def is_flood_message(message: Message) -> bool:
+def is_flood_message(message: Message, test: bool = False) -> bool:
     # Check if the message is flooding message
     try:
         gid = message.chat.id
@@ -257,8 +257,13 @@ def is_flood_message(message: Message) -> bool:
                     glovar.flood_ids[uid].remove(t)
 
             user_flood = deepcopy(glovar.flood_ids[uid])
-            limit = glovar.configs[gid]["limit"]
-            time = glovar.configs[gid]["time"]
+            if test:
+                limit = 5
+                time = 10
+            else:
+                limit = glovar.configs[gid]["limit"]
+                time = glovar.configs[gid]["time"]
+
             for t in user_flood:
                 if now - t > time:
                     user_flood.remove(t)
