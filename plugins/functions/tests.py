@@ -37,13 +37,12 @@ def flood_test(client: Client, message: Message) -> bool:
         if message_text:
             if re.search("^管理员：[0-9]", message_text):
                 return True
-            else:
-                aid = message.from_user.id
 
-            if is_flood_message(message, True):
-                text = (f"管理员：{user_mention(aid)}\n\n"
-                        f"洪水消息：{code('True')}\n")
-                thread(send_message, (client, glovar.test_group_id, text, message.message_id))
+        aid = message.from_user.id
+        if is_flood_message(message, True):
+            text = (f"管理员：{user_mention(aid)}\n\n"
+                    f"洪水消息：{code('True')}\n")
+            thread(send_message, (client, glovar.test_group_id, text, message.message_id))
 
         return True
     except Exception as e:
