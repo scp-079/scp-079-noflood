@@ -24,8 +24,7 @@ from .. import glovar
 from ..functions.channel import get_debug_text
 from ..functions.etc import code, thread, user_mention
 from ..functions.file import save
-from ..functions.filters import class_c, class_d, class_e, declared_message, exchange_channel, from_user, hide_channel
-from ..functions.filters import is_flood_message
+from ..functions.filters import class_c, class_d, class_e, exchange_channel, from_user, hide_channel, is_flood_message
 from ..functions.filters import new_group, test_group
 from ..functions.group import leave_group
 from ..functions.ids import init_group_id
@@ -44,7 +43,7 @@ logger = logging.getLogger(__name__)
 
 
 @Client.on_message(Filters.incoming & Filters.group & ~test_group & from_user & ~Filters.service
-                   & ~class_c & ~class_d & ~class_e & ~declared_message)
+                   & ~class_c & ~class_d & ~class_e )
 def check(client: Client, message: Message) -> bool:
     # Check the messages sent from groups
     if glovar.locks["message"].acquire():
@@ -314,7 +313,7 @@ def process_data(client: Client, message: Message) -> bool:
     return False
 
 
-@Client.on_message(Filters.incoming & Filters.group & test_group & from_user & Filters.media
+@Client.on_message(Filters.incoming & Filters.group & test_group & from_user & ~Filters.service
                    & ~Filters.command(glovar.all_commands, glovar.prefix))
 def test(client: Client, message: Message) -> bool:
     # Show test results in TEST group
