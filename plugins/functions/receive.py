@@ -66,7 +66,7 @@ def receive_add_except(client: Client, data: dict) -> bool:
     return False
 
 
-def receive_add_bad(data: dict) -> bool:
+def receive_add_bad(_: str, data: dict) -> bool:
     # Receive bad users or channels that other bots shared
     try:
         the_id = data["id"]

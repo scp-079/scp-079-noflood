@@ -256,6 +256,10 @@ def is_flood_message(message: Message, test: bool = False) -> Union[bool, str]:
                 if now - t > 60:
                     glovar.flood_ids[uid].remove(t)
 
+            # Check declare status
+            if is_declared_message(None, message):
+                return True
+
             user_flood = deepcopy(glovar.flood_ids[uid])
             if test:
                 limit = 5
