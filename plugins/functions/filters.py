@@ -244,7 +244,7 @@ def is_detected_user_id(gid: int, uid: int) -> bool:
     return False
 
 
-def is_flood_message(message: Message, test: bool = False) -> bool:
+def is_flood_message(message: Message, test: bool = False) -> Union[bool, str]:
     # Check if the message is flooding message
     try:
         gid = message.chat.id
@@ -268,8 +268,13 @@ def is_flood_message(message: Message, test: bool = False) -> bool:
                 if now - t > time:
                     user_flood.remove(t)
 
+            user_count = len(user_flood)
             if len(user_flood) >= limit:
-                return True
+                return f"{time} {user_count}"
+
+        # If the user is being punished
+        if is_detected_user(message):
+            return f"UNKNOWN UNKNOWN"
     except Exception as e:
         logger.warning(f"Is flood message error: {e}", exc_info=True)
 
