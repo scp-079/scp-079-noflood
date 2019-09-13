@@ -46,8 +46,8 @@ declared_message_ids: Dict[int, Set[int]] = {}
 default_config: Dict[str, Union[bool, int]] = {
     "default": True,
     "lock": 0,
-    "count": 0,
-    "time": 0
+    "limit": 5,
+    "time": 10
 }
 
 default_user_status: Dict[str, Dict[Union[int, str], Union[float, int]]] = {
@@ -294,7 +294,7 @@ configs: Dict[int, Dict[str, Union[bool, int]]] = {}
 #     -10012345678: {
 #         "default": True,
 #         "lock": 0,
-#         "count": 0,
+#         "limit": 0,
 #         "time": 0
 #     }
 # }
