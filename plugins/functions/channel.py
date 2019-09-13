@@ -134,7 +134,7 @@ def forward_evidence(client: Client, message: Message, level: str, rule: str, th
                 f"规则：{code(rule)}\n")
 
         if the_time and the_count:
-            text += f"消息频率：{the_time} 秒 {the_count} 条"
+            text += f"消息频率：{code(f'{the_time} 秒 {the_count} 条')}\n"
 
         if message.game:
             text += f"消息类别：{code('游戏')}\n"
