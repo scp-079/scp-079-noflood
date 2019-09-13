@@ -43,7 +43,7 @@ logger = logging.getLogger(__name__)
 
 
 @Client.on_message(Filters.incoming & Filters.group & ~test_group & from_user & ~Filters.service
-                   & ~class_c & ~class_d & ~class_e )
+                   & ~class_c & ~class_d & ~class_e)
 def check(client: Client, message: Message) -> bool:
     # Check the messages sent from groups
     if glovar.locks["message"].acquire():
