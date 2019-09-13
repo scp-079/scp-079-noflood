@@ -252,6 +252,7 @@ def is_flood_message(message: Message, test: bool = False) -> Union[bool, str]:
         if init_flood_id(uid):
             now = get_now()
             glovar.flood_ids[uid].append(now)
+            logger.warning(glovar.flood_ids[uid])
             for t in deepcopy(glovar.flood_ids[uid]):
                 if now - t > 60:
                     glovar.flood_ids[uid].remove(t)
@@ -260,7 +261,6 @@ def is_flood_message(message: Message, test: bool = False) -> Union[bool, str]:
             if is_declared_message(None, message):
                 return True
 
-            user_flood = deepcopy(glovar.flood_ids[uid])
             if test:
                 limit = 5
                 time = 10
@@ -268,10 +268,13 @@ def is_flood_message(message: Message, test: bool = False) -> Union[bool, str]:
                 limit = glovar.configs[gid]["limit"]
                 time = glovar.configs[gid]["time"]
 
+            user_flood = deepcopy(glovar.flood_ids[uid])
+            logger.warning(user_flood)
             for t in user_flood:
                 if now - t > time:
                     user_flood.remove(t)
 
+            logger.warning(user_flood)
             user_count = len(user_flood)
             if len(user_flood) >= limit:
                 return f"{time} {user_count}"
