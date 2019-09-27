@@ -162,6 +162,7 @@ declared_message_ids: Dict[int, Set[int]] = {}
 default_config: Dict[str, Union[bool, int]] = {
     "default": True,
     "lock": 0,
+    "delete": False,
     "limit": 5,
     "time": 10
 }
@@ -225,7 +226,7 @@ sender: str = "NOFLOOD"
 
 should_hide: bool = False
 
-version: str = "0.0.3"
+version: str = "0.0.4"
 
 # Load data from pickle
 
@@ -300,8 +301,9 @@ configs: Dict[int, Dict[str, Union[bool, int]]] = {}
 #     -10012345678: {
 #         "default": False,
 #         "lock": 1512345678,
+#         "delete": True,
 #         "limit": 5,
-#         "time": 15
+#         "time": 10
 #     }
 # }
 

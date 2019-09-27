@@ -108,6 +108,7 @@ def config_directly(client: Client, message: Message) -> bool:
                 if command_type == "show":
                     text += (f"操作：{code('查看设置')}\n"
                              f"设置：{code((lambda x: '默认' if x else '自定义')(new_config.get('default')))}\n"
+                             f"协助删除：{code((lambda x: '启用' if x else '禁用')(new_config.get('delete')))}\n"
                              f"检测时间：{code(str(new_config.get('time', 10)) + ' 秒')}\n"
                              f"限制条数：{code(str(new_config.get('limit', 5)) + ' 条')}\n")
                     thread(send_report_message, (30, client, gid, text))
@@ -122,7 +123,15 @@ def config_directly(client: Client, message: Message) -> bool:
                             new_config = deepcopy(glovar.default_config)
                     else:
                         if command_context:
-                            if command_type == "limit":
+                            if command_type in {"delete"}:
+                                if command_context == "off":
+                                    new_config[command_type] = False
+                                elif command_context == "on":
+                                    new_config[command_type] = True
+                                else:
+                                    success = False
+                                    reason = "命令参数有误"
+                            elif command_type == "limit":
                                 limit = get_int(command_context)
                                 if 2 <= limit <= 20:
                                     new_config["limit"] = limit
