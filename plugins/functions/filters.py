@@ -250,31 +250,36 @@ def is_flood_message(message: Message, test: bool = False) -> Union[bool, str]:
         gid = message.chat.id
         uid = message.from_user.id
         if init_flood_id(uid):
-            now = get_now()
-            glovar.flood_ids[uid].append(now)
-            for t in deepcopy(glovar.flood_ids[uid]):
-                if now - t > 60:
-                    glovar.flood_ids[uid].remove(t)
+            # Check if the media group message has been counted
+            if not message.media_group_id or message.media_group_id not in glovar.media_group_ids:
+                if message.media_group_id:
+                    glovar.media_group_ids.add(message.media_group_id)
 
-            # Check declare status
-            if is_declared_message(None, message):
-                return True
+                now = get_now()
+                glovar.flood_ids[uid].append(now)
+                for t in deepcopy(glovar.flood_ids[uid]):
+                    if now - t > 60:
+                        glovar.flood_ids[uid].remove(t)
 
-            if test:
-                limit = 5
-                time = 10
-            else:
-                limit = glovar.configs[gid]["limit"]
-                time = glovar.configs[gid]["time"]
+                # Check declare status
+                if is_declared_message(None, message):
+                    return True
 
-            user_flood = deepcopy(glovar.flood_ids[uid])
-            for t in deepcopy(user_flood):
-                if now - t > time:
-                    user_flood.remove(t)
+                if test:
+                    limit = 5
+                    time = 10
+                else:
+                    limit = glovar.configs[gid]["limit"]
+                    time = glovar.configs[gid]["time"]
 
-            user_count = len(user_flood)
-            if len(user_flood) >= limit:
-                return f"{time} {user_count}"
+                user_flood = deepcopy(glovar.flood_ids[uid])
+                for t in deepcopy(user_flood):
+                    if now - t > time:
+                        user_flood.remove(t)
+
+                user_count = len(user_flood)
+                if len(user_flood) >= limit:
+                    return f"{time} {user_count}"
 
         # If the user is being punished
         if is_detected_user(message):

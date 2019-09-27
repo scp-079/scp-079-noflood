@@ -71,6 +71,7 @@ flood_ids: Dict[int, List[int]] = {}
 # }
 
 left_group_ids: Set[int] = set()
+# left_group_ids = {-10012345678}
 
 locks: Dict[str, Lock] = {
     "admin": Lock(),
@@ -78,6 +79,9 @@ locks: Dict[str, Lock] = {
     "regex": Lock(),
     "test": Lock()
 }
+
+media_group_ids: Set[int] = set()
+# media_group_ids = {12556677123456789}
 
 receivers: Dict[str, List[str]] = {
     "bad": ["ANALYZE", "APPLY", "APPEAL", "AVATAR", "CAPTCHA", "CLEAN", "LANG", "LONG",
@@ -103,7 +107,7 @@ sender: str = "NOFLOOD"
 
 should_hide: bool = False
 
-version: str = "0.0.1"
+version: str = "0.0.2"
 
 # Read data from config.ini
 

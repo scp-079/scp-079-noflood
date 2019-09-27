@@ -163,7 +163,7 @@ def terminate_user(client: Client, message: Message, context: str) -> bool:
                 glovar.recorded_ids[gid].add(uid)
                 delete_message(client, gid, mid)
                 declare_message(client, gid, mid)
-                if glovar.configs[gid].get("delete", False):
+                if glovar.configs[gid].get("delete", True):
                     ask_for_help(client, "delete", gid, uid)
 
                 previous = add_detected_user(gid, uid)
