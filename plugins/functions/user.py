@@ -26,7 +26,7 @@ from .etc import crypt_str, get_forward_name, get_full_name, get_now, thread
 from .channel import ask_for_help, declare_message, forward_evidence, send_debug, share_bad_user
 from .channel import share_watch_user, update_score
 from .file import save
-from .group import delete_message
+from .group import delete_flood_messages, delete_message
 from .filters import is_class_d, is_declared_message, is_detected_user, is_high_score_user, is_regex_text, is_watch_user
 from .ids import init_user_id
 from .telegram import kick_chat_member
@@ -163,7 +163,8 @@ def terminate_user(client: Client, message: Message, context: str) -> bool:
                 glovar.recorded_ids[gid].add(uid)
                 delete_message(client, gid, mid)
                 declare_message(client, gid, mid)
-                if glovar.configs[gid].get("delete", True):
+                delete_flood_messages(client, uid)
+                if glovar.configs[gid].get("delete", False):
                     ask_for_help(client, "delete", gid, uid)
 
                 previous = add_detected_user(gid, uid)

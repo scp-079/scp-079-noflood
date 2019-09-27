@@ -30,7 +30,7 @@ def init_flood_id(uid: int) -> bool:
     # Init flood data
     try:
         if glovar.flood_ids.get(uid) is None:
-            glovar.flood_ids[uid] = []
+            glovar.flood_ids[uid] = {}
 
         return True
     except Exception as e:

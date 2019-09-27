@@ -17,6 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+from copy import deepcopy
 from typing import Optional
 
 from pyrogram import Client, Message
@@ -28,6 +29,28 @@ from .telegram import delete_messages, get_messages, leave_chat
 
 # Enable logging
 logger = logging.getLogger(__name__)
+
+
+def delete_flood_messages(client: Client, uid: int) -> bool:
+    # Delete the user's flood messages
+    try:
+        flood = deepcopy(glovar.flood_ids[uid])
+        need_delete = {}
+        for time in flood:
+            gid, mid = flood[time]
+            if need_delete.get(gid) is None:
+                need_delete[gid] = []
+
+            need_delete[gid].append(mid)
+
+        for gid in need_delete:
+            thread(delete_messages, (client, gid, need_delete[gid]))
+
+        return True
+    except Exception as e:
+        logger.warning(f"Delete flood messages error: {e}", exc_info=True)
+
+    return False
 
 
 def delete_message(client: Client, gid: int, mid: int) -> bool:

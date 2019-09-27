@@ -23,7 +23,7 @@ from os import mkdir
 from os.path import exists
 from shutil import rmtree
 from threading import Lock
-from typing import Dict, List, Set, Union
+from typing import Dict, List, Set, Tuple, Union
 
 # Enable logging
 logging.basicConfig(
@@ -33,81 +33,6 @@ logging.basicConfig(
     filemode='w'
 )
 logger = logging.getLogger(__name__)
-
-# Init
-
-all_commands: List[str] = ["config", "config_noflood", "version"]
-
-declared_message_ids: Dict[int, Set[int]] = {}
-# declared_message_ids = {
-#     -10012345678: {123}
-# }
-
-default_config: Dict[str, Union[bool, int]] = {
-    "default": True,
-    "lock": 0,
-    "limit": 5,
-    "time": 10
-}
-
-default_user_status: Dict[str, Dict[Union[int, str], Union[float, int]]] = {
-    "detected": {},
-    "score": {
-        "captcha": 0.0,
-        "clean": 0.0,
-        "lang": 0.0,
-        "long": 0.0,
-        "noflood": 0.0,
-        "noporn": 0.0,
-        "nospam": 0.0,
-        "recheck": 0.0,
-        "warn": 0.0
-    }
-}
-
-flood_ids: Dict[int, List[int]] = {}
-# flood_ids = {
-#     12345678: [1512345678]
-# }
-
-left_group_ids: Set[int] = set()
-# left_group_ids = {-10012345678}
-
-locks: Dict[str, Lock] = {
-    "admin": Lock(),
-    "message": Lock(),
-    "regex": Lock(),
-    "test": Lock()
-}
-
-media_group_ids: Set[int] = set()
-# media_group_ids = {12556677123456789}
-
-receivers: Dict[str, List[str]] = {
-    "bad": ["ANALYZE", "APPLY", "APPEAL", "AVATAR", "CAPTCHA", "CLEAN", "LANG", "LONG",
-            "MANAGE", "NOFLOOD", "NOPORN", "NOSPAM", "RECHECK", "TIP", "USER", "WATCH"],
-    "declare": ["ANALYZE", "AVATAR", "CLEAN", "LANG", "LONG",
-                "NOFLOOD", "NOPORN", "NOSPAM", "RECHECK", "USER", "WATCH"],
-    "score": ["ANALYZE", "CAPTCHA", "CLEAN", "LANG", "LONG",
-              "MANAGE", "NOFLOOD", "NOPORN", "NOSPAM", "RECHECK"],
-    "watch": ["ANALYZE", "CAPTCHA", "CLEAN", "LANG", "LONG",
-              "MANAGE", "NOFLOOD", "NOPORN", "NOSPAM", "RECHECK", "WATCH"]
-}
-
-recorded_ids: Dict[int, Set[int]] = {}
-# recorded_ids = {
-#     -10012345678: {12345678}
-# }
-
-regex: Dict[str, bool] = {
-    "wb": True
-}
-
-sender: str = "NOFLOOD"
-
-should_hide: bool = False
-
-version: str = "0.0.2"
 
 # Read data from config.ini
 
@@ -222,8 +147,85 @@ if (bot_token in {"", "[DATA EXPUNGED]"}
     logger.critical("No proper settings")
     raise SystemExit("No proper settings")
 
-bot_ids: Set[int] = {avatar_id, captcha_id, clean_id, lang_id, long_id,
-                     noflood_id, noporn_id, nospam_id, recheck_id, tip_id, user_id, warn_id}
+bot_ids: Set[int] = {avatar_id, captcha_id, clean_id, lang_id, long_id, noflood_id,
+                     noporn_id, nospam_id, recheck_id, tip_id, user_id, warn_id}
+
+# Init
+
+all_commands: List[str] = ["config", "config_noflood", "version"]
+
+declared_message_ids: Dict[int, Set[int]] = {}
+# declared_message_ids = {
+#     -10012345678: {123}
+# }
+
+default_config: Dict[str, Union[bool, int]] = {
+    "default": True,
+    "lock": 0,
+    "limit": 5,
+    "time": 10
+}
+
+default_user_status: Dict[str, Dict[Union[int, str], Union[float, int]]] = {
+    "detected": {},
+    "score": {
+        "captcha": 0.0,
+        "clean": 0.0,
+        "lang": 0.0,
+        "long": 0.0,
+        "noflood": 0.0,
+        "noporn": 0.0,
+        "nospam": 0.0,
+        "recheck": 0.0,
+        "warn": 0.0
+    }
+}
+
+flood_ids: Dict[int, Dict[float, Tuple[int, int]]] = {}
+# flood_ids = {
+#     12345678: {
+#         1512345678.1234567: (-10012345678, 123)
+#     }
+# }
+
+left_group_ids: Set[int] = set()
+# left_group_ids = {-10012345678}
+
+locks: Dict[str, Lock] = {
+    "admin": Lock(),
+    "message": Lock(),
+    "regex": Lock(),
+    "test": Lock()
+}
+
+media_group_ids: Set[int] = set()
+# media_group_ids = {12556677123456789}
+
+receivers: Dict[str, List[str]] = {
+    "bad": ["ANALYZE", "APPLY", "APPEAL", "AVATAR", "CAPTCHA", "CLEAN", "LANG", "LONG",
+            "MANAGE", "NOFLOOD", "NOPORN", "NOSPAM", "RECHECK", "TIP", "USER", "WATCH"],
+    "declare": ["ANALYZE", "AVATAR", "CLEAN", "LANG", "LONG",
+                "NOFLOOD", "NOPORN", "NOSPAM", "RECHECK", "USER", "WATCH"],
+    "score": ["ANALYZE", "CAPTCHA", "CLEAN", "LANG", "LONG",
+              "MANAGE", "NOFLOOD", "NOPORN", "NOSPAM", "RECHECK"],
+    "watch": ["ANALYZE", "CAPTCHA", "CLEAN", "LANG", "LONG",
+              "MANAGE", "NOFLOOD", "NOPORN", "NOSPAM", "RECHECK", "WATCH"]
+}
+
+recorded_ids: Dict[int, Set[int]] = {}
+# recorded_ids = {
+#     -10012345678: {12345678}
+# }
+
+regex: Dict[str, bool] = {
+    "wb": True
+}
+
+sender: str = "NOFLOOD"
+
+should_hide: bool = False
+
+version: str = "0.0.3"
 
 # Load data from pickle
 
@@ -284,10 +286,10 @@ watch_ids: Dict[str, Dict[int, int]] = {
 }
 # watch_ids = {
 #     "ban": {
-#         12345678: 0
+#         12345678: 1512345678
 #     },
 #     "delete": {
-#         12345678: 0
+#         12345678: 1512345678
 #     }
 # }
 
@@ -296,10 +298,10 @@ watch_ids: Dict[str, Dict[int, int]] = {
 configs: Dict[int, Dict[str, Union[bool, int]]] = {}
 # configs = {
 #     -10012345678: {
-#         "default": True,
-#         "lock": 0,
-#         "limit": 0,
-#         "time": 0
+#         "default": False,
+#         "lock": 1512345678,
+#         "limit": 5,
+#         "time": 15
 #     }
 # }
 
