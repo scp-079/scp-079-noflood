@@ -258,7 +258,7 @@ def is_flood_message(message: Message, test: bool = False) -> Union[bool, str]:
                     glovar.media_group_ids.add(message.media_group_id)
 
                 now = time()
-                glovar.flood_ids[uid][now] = (gid, mid)
+                glovar.flood_ids[uid][message.date or now] = (gid, mid)
                 for t in list(glovar.flood_ids[uid]):
                     if now - t > 60:
                         glovar.flood_ids[uid].pop(t, (0, 0))
