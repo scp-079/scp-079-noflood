@@ -223,7 +223,7 @@ def get_forward_name(message: Message) -> str:
             text = chat.title
 
         if text:
-            text = normal(text)
+            text = t2t(text)
     except Exception as e:
         logger.warning(f"Get forward name error: {e}", exc_info=True)
 
@@ -240,7 +240,7 @@ def get_full_name(user: User) -> str:
                 text += f" {user.last_name}"
 
         if text:
-            text = normal(text)
+            text = t2t(text)
     except Exception as e:
         logger.warning(f"Get full name error: {e}", exc_info=True)
 
@@ -377,13 +377,13 @@ def message_link(message: Message) -> str:
     return text
 
 
-def normal(text: str) -> str:
-    # Convert the string
+def t2t(text: str) -> str:
+    # Convert the string, text to text
     try:
         if glovar.zh_cn:
             text = convert(text, config="t2s.json")
     except Exception as e:
-        logger.warning(f"T2S error: {e}", exc_info=True)
+        logger.warning(f"T2T error: {e}", exc_info=True)
 
     return text
 
