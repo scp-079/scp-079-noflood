@@ -31,6 +31,8 @@ from opencc import convert
 from pyrogram import Message, User
 from pyrogram.errors import FloodWait
 
+from .. import glovar
+
 # Enable logging
 logger = logging.getLogger(__name__)
 
@@ -183,6 +185,30 @@ def get_command_type(message: Message) -> str:
     return result
 
 
+def get_config_text(config: dict) -> str:
+    # Get config text
+    result = ""
+    try:
+        # Basic
+        default_text = (lambda x: lang("default") if x else lang("custom"))(config.get("default"))
+        delete_text = (lambda x: lang("enabled") if x else lang("disabled"))(config.get("delete"))
+        result += (f"{lang('config')}{lang('colon')}{code(default_text)}\n"
+                   f"{lang('delete')}{lang('colon')}{code(delete_text)}\n")
+
+        # Time
+        result += f"{lang('noflood_time')}{lang('colon')}{code(config.get('time'))}\n"
+
+        # Limit
+        result += f"{lang('noflood_limit')}{lang('colon')}{code(config.get('limit'))}\n"
+
+        # Purge
+        result += f"{lang('noflood_purge')}{lang('colon')}{code(config.get('purge'))}\n"
+    except Exception as e:
+        logger.warning(f"Get config text error: {e}", exc_info=True)
+
+    return result
+
+
 def get_forward_name(message: Message) -> str:
     # Get forwarded message's origin sender's name
     text = ""
@@ -253,7 +279,9 @@ def get_report_record(message: Message) -> Dict[str, str]:
         "level": "",
         "rule": "",
         "type": "",
+        "game": "",
         "lang": "",
+        "length": "",
         "freq": "",
         "score": "",
         "bio": "",
@@ -263,40 +291,47 @@ def get_report_record(message: Message) -> Dict[str, str]:
         "unknown": ""
     }
     try:
+        if not message.text:
+            return record
+
         record_list = message.text.split("\n")
         for r in record_list:
-            if re.search("^项目编号：", r):
+            if re.search(f"^{lang('project')}{lang('colon')}", r):
                 record_type = "project"
-            elif re.search("^原始项目：", r):
+            elif re.search(f"^{lang('project_origin')}{lang('colon')}", r):
                 record_type = "origin"
-            elif re.search("^状态：", r):
+            elif re.search(f"^{lang('status')}{lang('colon')}", r):
                 record_type = "status"
-            elif re.search("^用户 ID：", r):
+            elif re.search(f"^{lang('user_id')}{lang('colon')}", r):
                 record_type = "uid"
-            elif re.search("^操作等级：", r):
+            elif re.search(f"^{lang('level')}{lang('colon')}", r):
                 record_type = "level"
-            elif re.search("^规则：", r):
+            elif re.search(f"^{lang('rule')}{lang('colon')}", r):
                 record_type = "rule"
-            elif re.search("^消息类别", r):
+            elif re.search(f"^{lang('message_type')}{lang('colon')}", r):
                 record_type = "type"
-            elif re.search("^消息语言", r):
+            elif re.search(f"^{lang('message_game')}{lang('colon')}", r):
+                record_type = "game"
+            elif re.search(f"^{lang('message_lang')}{lang('colon')}", r):
                 record_type = "lang"
-            elif re.search("^消息频率", r):
+            elif re.search(f"^{lang('message_len')}{lang('colon')}", r):
+                record_type = "length"
+            elif re.search(f"^{lang('message_freq')}{lang('colon')}", r):
                 record_type = "freq"
-            elif re.search("^用户得分", r):
+            elif re.search(f"^{lang('user_score')}{lang('colon')}", r):
                 record_type = "score"
-            elif re.search("^用户简介", r):
+            elif re.search(f"^{lang('user_bio')}{lang('colon')}", r):
                 record_type = "bio"
-            elif re.search("^用户昵称", r):
+            elif re.search(f"^{lang('user_name')}{lang('colon')}", r):
                 record_type = "name"
-            elif re.search("^来源名称", r):
+            elif re.search(f"^{lang('from_name')}{lang('colon')}", r):
                 record_type = "from"
-            elif re.search("^附加信息", r):
+            elif re.search(f"^{lang('more')}{lang('colon')}", r):
                 record_type = "more"
             else:
                 record_type = "unknown"
 
-            record[record_type] = r.split("：")[-1]
+            record[record_type] = r.split(f"{lang('colon')}")[-1]
     except Exception as e:
         logger.warning(f"Get report record error: {e}", exc_info=True)
 
@@ -307,6 +342,9 @@ def get_text(message: Message) -> str:
     # Get message's text
     text = ""
     try:
+        if not message:
+            return ""
+
         the_text = message.text or message.caption
         if the_text:
             text += the_text
@@ -314,6 +352,17 @@ def get_text(message: Message) -> str:
         logger.warning(f"Get text error: {e}", exc_info=True)
 
     return text
+
+
+def lang(text: str) -> str:
+    # Get the text
+    result = ""
+    try:
+        result = glovar.lang.get(text, text)
+    except Exception as e:
+        logger.warning(f"Lang error: {e}", exc_info=True)
+
+    return result
 
 
 def message_link(message: Message) -> str:
@@ -340,9 +389,10 @@ def random_str(i: int) -> str:
 
 
 def t2s(text: str) -> str:
-    # Convert Traditional Chinese to Simplified Chinese
+    # Convert the string
     try:
-        text = convert(text, config="t2s.json")
+        if glovar.zh_cn:
+            text = convert(text, config="t2s.json")
     except Exception as e:
         logger.warning(f"T2S error: {e}", exc_info=True)
 

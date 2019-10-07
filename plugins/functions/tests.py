@@ -22,7 +22,7 @@ import re
 from pyrogram import Client, Message
 
 from .. import glovar
-from .etc import code, get_text, thread, user_mention
+from .etc import code, get_text, lang, thread, user_mention
 from .filters import is_flood_message
 from .telegram import send_message
 
@@ -35,13 +35,13 @@ def flood_test(client: Client, message: Message) -> bool:
     try:
         message_text = get_text(message)
         if message_text:
-            if re.search("^管理员：[0-9]", message_text):
+            if re.search(f"^{lang('admin')}{lang('colon')}[0-9]", message_text):
                 return True
 
         aid = message.from_user.id
         if is_flood_message(message, True):
-            text = (f"管理员：{user_mention(aid)}\n\n"
-                    f"洪水消息：{code('True')}\n")
+            text = (f"{lang('admin')}{lang('colon')}{user_mention(aid)}\n\n"
+                    f"{lang('flood_message')}{lang('colon')}{code('True')}\n")
             thread(send_message, (client, glovar.test_group_id, text, message.message_id))
 
         return True

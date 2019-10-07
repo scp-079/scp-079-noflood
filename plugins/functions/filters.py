@@ -133,12 +133,11 @@ def is_hide_channel(_, message: Message) -> bool:
 def is_new_group(_, message: Message) -> bool:
     # Check if the bot joined a new group
     try:
-        if message.new_chat_members:
-            new_users = message.new_chat_members
-            if new_users:
-                for user in new_users:
-                    if user.is_self:
-                        return True
+        new_users = message.new_chat_members
+        if new_users:
+            for user in new_users:
+                if user.is_self:
+                    return True
         elif message.group_chat_created or message.supergroup_chat_created:
             return True
     except Exception as e:
@@ -223,21 +222,21 @@ def is_detected_user(message: Message) -> bool:
         if message.from_user:
             gid = message.chat.id
             uid = message.from_user.id
-            return is_detected_user_id(gid, uid)
+            now = message.date or get_now()
+            return is_detected_user_id(gid, uid, now)
     except Exception as e:
         logger.warning(f"Is detected user error: {e}", exc_info=True)
 
     return False
 
 
-def is_detected_user_id(gid: int, uid: int) -> bool:
+def is_detected_user_id(gid: int, uid: int, now: int) -> bool:
     # Check if the user_id is detected in the group
     try:
         user = glovar.user_ids.get(uid, {})
         if user:
             status = user["detected"].get(gid, 0)
-            now = get_now()
-            if now - status < glovar.punish_time:
+            if now - status < glovar.time_punish:
                 return True
     except Exception as e:
         logger.warning(f"Is detected user id error: {e}", exc_info=True)
@@ -248,45 +247,52 @@ def is_detected_user_id(gid: int, uid: int) -> bool:
 def is_flood_message(message: Message, test: bool = False) -> Union[bool, str]:
     # Check if the message is flooding message
     try:
+        # Basic data
         gid = message.chat.id
         uid = message.from_user.id
         mid = message.message_id
-        if init_flood_id(uid):
-            # Check if the media group message has been counted
-            if not message.media_group_id or message.media_group_id not in glovar.media_group_ids:
-                if message.media_group_id:
-                    glovar.media_group_ids.add(message.media_group_id)
 
-                now = time()
-                the_time = (message.date and message.date + now - int(now)) or now
-                glovar.flood_ids[uid][the_time] = (gid, mid)
-                for t in list(glovar.flood_ids[uid]):
-                    if now - t > 60:
-                        glovar.flood_ids[uid].pop(t, (0, 0))
+        # Init ID
+        if not init_flood_id(uid):
+            return False
 
-                # Check declare status
-                if is_declared_message(None, message):
-                    return False
+        # Do not count the media group message
+        if message.media_group_id and message.media_group_id in glovar.media_group_ids:
+            return False
 
-                if test:
-                    flood_limit = 5
-                    flood_time = 10
-                else:
-                    flood_limit = glovar.configs[gid]["limit"]
-                    flood_time = glovar.configs[gid]["time"]
+        if message.media_group_id:
+            glovar.media_group_ids.add(message.media_group_id)
 
-                user_flood = deepcopy(glovar.flood_ids[uid])
-                for t in deepcopy(user_flood):
-                    if now - t > flood_time:
-                        user_flood.pop(t, (0, 0))
+        # Delete old ID
+        the_time = time()
+        now = (message.date and message.date + the_time - int(the_time)) or the_time
+        glovar.flood_ids[uid][now] = (gid, mid)
+        for t in list(glovar.flood_ids[uid]):
+            if now - t > 60:
+                glovar.flood_ids[uid].pop(t, (0, 0))
 
-                user_count = len(user_flood)
-                if len(user_flood) >= flood_limit:
-                    return f"{flood_time} {user_count}"
+        # Get the config
+        if test:
+            flood_time = 10
+            flood_limit = 5
+        else:
+            flood_time = glovar.configs[gid].get("time", 10)
+            flood_limit = glovar.configs[gid].get("limit", 5)
+
+        # Delete ID according to the group's config
+        user_flood = deepcopy(glovar.flood_ids[uid])
+        for t in list(user_flood):
+            if now - t > flood_time:
+                user_flood.pop(t, (0, 0))
+
+        # Check the flood status
+        user_count = len(user_flood)
+        if len(user_flood) >= flood_limit:
+            return f"{flood_time} {user_count}"
 
         # If the user is being punished
         if is_detected_user(message):
-            return f"UNKNOWN UNKNOWN"
+            return f"true true"
     except Exception as e:
         logger.warning(f"Is flood message error: {e}", exc_info=True)
 
@@ -348,7 +354,7 @@ def is_watch_user(message: Message, the_type: str) -> bool:
     try:
         if message.from_user:
             uid = message.from_user.id
-            now = get_now()
+            now = message.date or get_now()
             until = glovar.watch_ids[the_type].get(uid, 0)
             if now < until:
                 return True

@@ -53,7 +53,7 @@ def delete_messages(client: Client, cid: int, mids: Iterable[int]) -> Optional[b
     return result
 
 
-def download_media(client: Client, file_id: str, file_path: str):
+def download_media(client: Client, file_id: str, file_ref: str, file_path: str):
     # Download a media file
     result = None
     try:
@@ -61,7 +61,7 @@ def download_media(client: Client, file_id: str, file_path: str):
         while flood_wait:
             flood_wait = False
             try:
-                result = client.download_media(message=file_id, file_name=file_path)
+                result = client.download_media(message=file_id, file_ref=file_ref, file_name=file_path)
             except FloodWait as e:
                 flood_wait = True
                 wait_flood(e)
@@ -177,7 +177,7 @@ def leave_chat(client: Client, cid: int) -> bool:
     return False
 
 
-def send_document(client: Client, cid: int, file: str, text: str = None, mid: int = None,
+def send_document(client: Client, cid: int, document: str, file_ref: str = None, caption: str = "", mid: int = None,
                   markup: InlineKeyboardMarkup = None) -> Optional[Union[bool, Message]]:
     # Send a document to a chat
     result = None
@@ -188,8 +188,9 @@ def send_document(client: Client, cid: int, file: str, text: str = None, mid: in
             try:
                 result = client.send_document(
                     chat_id=cid,
-                    document=file,
-                    caption=text,
+                    document=document,
+                    file_ref=file_ref,
+                    caption=caption,
                     parse_mode="html",
                     reply_to_message_id=mid,
                     reply_markup=markup
