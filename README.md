@@ -13,7 +13,7 @@ See [this article](https://scp-079.org/noflood/).
 ## Requirements
 
 - Python 3.6 or higher
-- Ubuntu: `sudo apt update && sudo apt install opencc -y`
+- Debian 10: `sudo apt update && sudo apt install opencc -y`
 - pip: `pip install -r requirements.txt` or `pip install -U APScheduler OpenCC pyAesCrypt pyrogram[fast]`
 
 ## Files
