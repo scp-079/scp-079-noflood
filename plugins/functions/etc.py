@@ -25,6 +25,7 @@ from string import ascii_letters, digits
 from threading import Thread, Timer
 from time import sleep, time
 from typing import Any, Callable, Dict, Optional, Union
+from unicodedata import normalize
 
 from cryptography.fernet import Fernet
 from opencc import convert
@@ -209,13 +210,13 @@ def get_config_text(config: dict) -> str:
     return result
 
 
-def get_forward_name(message: Message) -> str:
+def get_forward_name(message: Message, normal: bool = False) -> str:
     # Get forwarded message's origin sender's name
     text = ""
     try:
         if message.forward_from:
             user = message.forward_from
-            text = get_full_name(user)
+            text = get_full_name(user, normal)
         elif message.forward_sender_name:
             text = message.forward_sender_name
         elif message.forward_from_chat:
@@ -223,14 +224,14 @@ def get_forward_name(message: Message) -> str:
             text = chat.title
 
         if text:
-            text = t2t(text)
+            text = t2t(text, normal)
     except Exception as e:
         logger.warning(f"Get forward name error: {e}", exc_info=True)
 
     return text
 
 
-def get_full_name(user: User) -> str:
+def get_full_name(user: User, normal: bool = False) -> str:
     # Get user's full name
     text = ""
     try:
@@ -240,7 +241,7 @@ def get_full_name(user: User) -> str:
                 text += f" {user.last_name}"
 
         if text:
-            text = t2t(text)
+            text = t2t(text, normal)
     except Exception as e:
         logger.warning(f"Get full name error: {e}", exc_info=True)
 
@@ -377,9 +378,21 @@ def message_link(message: Message) -> str:
     return text
 
 
-def t2t(text: str) -> str:
+def t2t(text: str, normal: bool, printable: bool = True) -> str:
     # Convert the string, text to text
     try:
+        if not text:
+            return ""
+
+        if normal:
+            for special in ["spc", "spe"]:
+                text = "".join(eval(f"glovar.{special}_dict").get(t, t) for t in text)
+
+            text = normalize("NFKC", text)
+
+        if printable:
+            text = "".join(t for t in text if t.isprintable() or t in {"\n", "\r", "\t"})
+
         if glovar.zh_cn:
             text = convert(text, config="t2s.json")
     except Exception as e:
