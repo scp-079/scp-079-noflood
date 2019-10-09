@@ -53,6 +53,7 @@ def is_class_c(_, message: Message) -> bool:
 
     return False
 
+
 def is_class_d(_, message: Message) -> bool:
     # Check if the message is Class D object
     try:
