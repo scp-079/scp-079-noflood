@@ -266,6 +266,10 @@ def is_flood_message(message: Message, test: bool = False) -> str:
         if message.media_group_id and message.media_group_id in glovar.media_group_ids:
             return ""
 
+        # Do not count edited message
+        if message.edit_date:
+            return ""
+
         if message.media_group_id:
             glovar.media_group_ids.add(message.media_group_id)
 
