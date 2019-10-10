@@ -86,7 +86,7 @@ def config(client: Client, message: Message) -> bool:
             }
         )
 
-        # Send debug
+        # Send debug message
         text = get_debug_text(client, message.chat)
         text += (f"{lang('admin_group')}{lang('colon')}{code(message.from_user.id)}\n"
                  f"{lang('action')}{lang('colon')}{code(lang('config_create'))}\n")
@@ -188,7 +188,7 @@ def config_directly(client: Client, message: Message) -> bool:
             glovar.configs[gid] = new_config
             save("configs")
 
-            # Send debug
+            # Send debug message
             debug_text = get_debug_text(client, message.chat)
             debug_text += (f"{lang('admin_group')}{lang('colon')}{code(message.from_user.id)}\n"
                            f"{lang('action')}{lang('colon')}{code(lang('config_change'))}\n"
