@@ -34,11 +34,12 @@ def flood_test(client: Client, message: Message) -> bool:
     # Test message's flood status
     try:
         message_text = get_text(message)
-        if message_text:
-            if re.search(f"^{lang('admin')}{lang('colon')}[0-9]", message_text):
-                return True
+        if re.search(f"^{lang('admin')}{lang('colon')}[0-9]", message_text):
+            return True
+        else:
+            aid = message.from_user.id
 
-        aid = message.from_user.id
+        # Send the result
         if is_flood_message(message, True):
             text = (f"{lang('admin')}{lang('colon')}{user_mention(aid)}\n\n"
                     f"{lang('flood_message')}{lang('colon')}{code('True')}\n")
