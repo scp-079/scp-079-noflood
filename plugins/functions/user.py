@@ -231,7 +231,7 @@ def terminate_user(client: Client, message: Message, context: str) -> bool:
                 delete_message(client, gid, mid)
                 declare_message(client, gid, mid)
                 delete_flood_messages(client, uid)
-                glovar.config[gid].get("purge") and ask_for_help(client, "delete", gid, uid)
+                glovar.configs[gid].get("purge") and ask_for_help(client, "delete", gid, uid)
                 previous = add_detected_user(gid, uid, now)
                 not previous and update_score(client, uid)
                 send_debug(
