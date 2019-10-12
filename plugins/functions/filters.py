@@ -253,6 +253,9 @@ def is_detected_user_id(gid: int, uid: int, now: int) -> bool:
 def is_flood_message(message: Message, test: bool = False) -> str:
     # Check if the message is flooding message
     try:
+        if not message.chat:
+            return ""
+
         # Basic data
         gid = message.chat.id
         uid = message.from_user.id
@@ -264,10 +267,6 @@ def is_flood_message(message: Message, test: bool = False) -> str:
 
         # Do not count the media group message
         if message.media_group_id and message.media_group_id in glovar.media_group_ids:
-            return ""
-
-        # Do not count edited message
-        if message.edit_date:
             return ""
 
         if message.media_group_id:
