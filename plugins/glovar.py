@@ -277,6 +277,7 @@ default_config: Dict[str, Union[bool, int]] = {
     "default": True,
     "lock": 0,
     "delete": True,
+    "restrict": False,
     "time": 10,
     "limit": 5,
     "purge": False
