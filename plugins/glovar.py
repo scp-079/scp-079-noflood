@@ -187,6 +187,7 @@ lang: Dict[str, str] = {
     "custom": (zh_cn and "自定义") or "Custom",
     "default": (zh_cn and "默认") or "Default",
     "delete": (zh_cn and "协助删除") or "Help Delete",
+    "restrict": (zh_cn and "禁言模式") or "Restriction Mode",
     "noflood_time": (zh_cn and "检测时间秒数") or "Time in seconds",
     "noflood_limit": (zh_cn and "消息条数上限") or "Message Count Limit",
     "noflood_purge": (zh_cn and "清除所有消息") or "Purge All Messages",
@@ -342,7 +343,7 @@ sender: str = "NOFLOOD"
 
 should_hide: bool = False
 
-version: str = "0.0.8"
+version: str = "0.0.9"
 
 # Load data from pickle
 

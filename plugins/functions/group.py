@@ -23,7 +23,7 @@ from typing import Optional
 from pyrogram import Client, Message
 
 from .. import glovar
-from .etc import thread
+from .etc import code, lang, thread
 from .file import save
 from .telegram import delete_messages, get_messages, leave_chat
 
@@ -67,6 +67,30 @@ def delete_message(client: Client, gid: int, mid: int) -> bool:
         logger.warning(f"Delete message error: {e}", exc_info=True)
 
     return False
+
+
+def get_config_text(config: dict) -> str:
+    # Get config text
+    result = ""
+    try:
+        # Basic
+        default_text = (lambda x: lang("default") if x else lang("custom"))(config.get("default"))
+        delete_text = (lambda x: lang("enabled") if x else lang("disabled"))(config.get("delete"))
+        result += (f"{lang('config')}{lang('colon')}{code(default_text)}\n"
+                   f"{lang('delete')}{lang('colon')}{code(delete_text)}\n")
+
+        # Time
+        result += f"{lang('noflood_time')}{lang('colon')}{code(config.get('time'))}\n"
+
+        # Limit
+        result += f"{lang('noflood_limit')}{lang('colon')}{code(config.get('limit'))}\n"
+
+        # Purge
+        result += f"{lang('noflood_purge')}{lang('colon')}{code(config.get('purge'))}\n"
+    except Exception as e:
+        logger.warning(f"Get config text error: {e}", exc_info=True)
+
+    return result
 
 
 def get_message(client: Client, gid: int, mid: int) -> Optional[Message]:
