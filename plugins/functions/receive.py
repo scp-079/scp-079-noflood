@@ -78,8 +78,9 @@ def receive_add_bad(sender: str, data: dict) -> bool:
         # Receive bad channel
         if sender == "MANAGE" and the_type == "channel":
             glovar.bad_ids["channels"].add(the_id)
+
         # Receive bad user
-        elif the_type == "user":
+        if the_type == "user":
             glovar.bad_ids["users"].add(the_id)
 
         save("bad_ids")
@@ -106,20 +107,23 @@ def receive_clear_data(client: Client, data_type: str, data: dict) -> bool:
                 glovar.bad_ids["users"] = set()
 
             save("bad_ids")
+
         # Clear except data
-        elif data_type == "except":
+        if data_type == "except":
             if the_type == "long":
                 glovar.except_ids["long"] = set()
 
             save("except_ids")
+
         # Clear user data
-        elif data_type == "user":
+        if data_type == "user":
             if the_type == "all":
                 glovar.user_ids = {}
 
             save("user_ids")
+
         # Clear watch data
-        elif data_type == "watch":
+        if data_type == "watch":
             if the_type == "all":
                 glovar.watch_ids = {
                     "ban": {},
@@ -400,8 +404,9 @@ def receive_remove_bad(sender: str, data: dict) -> bool:
         # Remove bad channel
         if sender == "MANAGE" and the_type == "channel":
             glovar.bad_ids["channels"].discard(the_id)
+
         # Remove bad user
-        elif the_type == "user":
+        if the_type == "user":
             glovar.bad_ids["users"].discard(the_id)
             glovar.watch_ids["ban"].pop(the_id, {})
             glovar.watch_ids["delete"].pop(the_id, {})
