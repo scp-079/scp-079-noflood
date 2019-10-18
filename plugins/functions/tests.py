@@ -33,8 +33,8 @@ logger = logging.getLogger(__name__)
 def flood_test(client: Client, message: Message) -> bool:
     # Test message's flood status
     try:
-        message_text = get_text(message)
-        if re.search(f"^{lang('admin')}{lang('colon')}[0-9]", message_text):
+        origin_text = get_text(message)
+        if re.search(f"^{lang('admin')}{lang('colon')}[0-9]", origin_text):
             return True
         else:
             aid = message.from_user.id
