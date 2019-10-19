@@ -117,7 +117,7 @@ def get_group_info(client: Client, chat: Union[int, Chat]) -> (str, str):
         if chat.username:
             group_link = "https://t.me/" + chat.username
     except Exception as e:
-        logger.info(f"Get group info error: {e}", exc_info=True)
+        logger.info(f"Get group {chat} info error: {e}", exc_info=True)
 
     return group_name, group_link
 
@@ -135,7 +135,7 @@ def get_messages(client: Client, cid: int, mids: Iterable[int]) -> Optional[List
                 flood_wait = True
                 wait_flood(e)
     except Exception as e:
-        logger.warning(f"Get messages error: {e}", exc_info=True)
+        logger.warning(f"Get messages {mids} in {cid} error: {e}", exc_info=True)
 
     return result
 
@@ -196,7 +196,7 @@ def restrict_chat_member(client: Client, cid: int, uid: int, permissions: ChatPe
                 flood_wait = True
                 wait_flood(e)
     except Exception as e:
-        logger.warning(f"Restrict chat member error: {e}", exc_info=True)
+        logger.warning(f"Restrict chat member {uid} in {cid} error: {e}", exc_info=True)
 
     return result
 
@@ -225,7 +225,7 @@ def send_document(client: Client, cid: int, document: str, file_ref: str = None,
             except (PeerIdInvalid, ChannelInvalid, ChannelPrivate):
                 return False
     except Exception as e:
-        logger.warning(f"Send document to {cid} error: {e}", exec_info=True)
+        logger.warning(f"Send document {document} to {cid} error: {e}", exec_info=True)
 
     return result
 
@@ -292,6 +292,6 @@ def send_report_message(secs: int, client: Client, cid: int, text: str, mid: int
         mids = [mid]
         delay(secs, delete_messages, [client, cid, mids])
     except Exception as e:
-        logger.warning(f"Send message to {cid} error: {e}", exc_info=True)
+        logger.warning(f"Send report message to {cid} error: {e}", exc_info=True)
 
     return result
