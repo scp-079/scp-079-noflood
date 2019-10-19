@@ -196,7 +196,7 @@ def terminate_user(client: Client, message: Message, context: str) -> bool:
             result = forward_evidence(
                 client=client,
                 message=message,
-                level=lang("auto_delete"),
+                level=lang("global_delete"),
                 rule=lang("watch_user"),
                 the_time=the_time,
                 the_count=the_count
