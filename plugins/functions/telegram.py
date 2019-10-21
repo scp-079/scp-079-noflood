@@ -19,7 +19,7 @@
 import logging
 from typing import Iterable, List, Optional, Union
 
-from pyrogram import Chat, ChatMember, ChatPermissions, Client, InlineKeyboardMarkup, Message
+from pyrogram import Chat, ChatMember, ChatPermissions, ChatPreview, Client, InlineKeyboardMarkup, Message
 from pyrogram.errors import ChannelInvalid, ChannelPrivate, FloodWait, PeerIdInvalid
 
 from .. import glovar
@@ -91,25 +91,43 @@ def get_admins(client: Client, cid: int) -> Optional[Union[bool, List[ChatMember
     return result
 
 
-def get_group_info(client: Client, chat: Union[int, Chat]) -> (str, str):
+def get_chat(client: Client, cid: Union[int, str]) -> Optional[Union[Chat, ChatPreview]]:
+    # Get a chat
+    result = None
+    try:
+        flood_wait = True
+        while flood_wait:
+            flood_wait = False
+            try:
+                result = client.get_chat(chat_id=cid)
+            except FloodWait as e:
+                flood_wait = True
+                wait_flood(e)
+    except Exception as e:
+        logger.warning(f"Get chat {cid} error: {e}", exc_info=True)
+
+    return result
+
+
+def get_group_info(client: Client, chat: Union[int, Chat], cache: bool = True) -> (str, str):
     # Get a group's name and link
     group_name = "Unknown Group"
     group_link = glovar.default_group_link
     try:
         if isinstance(chat, int):
-            result = None
-            flood_wait = True
-            while flood_wait:
-                flood_wait = False
-                try:
-                    result = client.get_chat(chat_id=chat)
-                except FloodWait as e:
-                    flood_wait = True
-                    wait_flood(e)
-                except Exception as e:
-                    logger.info(f"Get chat {chat} error: {e}", exc_info=True)
+            the_cache = glovar.chats.get(chat)
+            if the_cache:
+                chat = the_cache
+            else:
+                result = get_chat(client, chat)
 
-            chat = result
+                if cache and result:
+                    glovar.chats[chat] = result
+
+                chat = result
+
+        if not chat:
+            return group_name, group_link
 
         if chat.title:
             group_name = chat.title
