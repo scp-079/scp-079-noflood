@@ -96,6 +96,7 @@ def crypt_str(operation: str, text: str, key: str) -> str:
     try:
         f = Fernet(key)
         text = text.encode("utf-8")
+
         if operation == "decrypt":
             result = f.decrypt(text)
         else:
@@ -162,14 +163,18 @@ def get_command_context(message: Message) -> (str, str):
     try:
         text = get_text(message)
         command_list = text.split(" ")
-        if len(list(filter(None, command_list))) > 1:
-            i = 1
-            command_type = command_list[i]
-            while command_type == "" and i < len(command_list):
-                i += 1
-                command_type = command_list[i]
 
-            command_context = text[1 + len(command_list[0]) + i + len(command_type):].strip()
+        if len(list(filter(None, command_list))) <= 1:
+            return "", ""
+
+        i = 1
+        command_type = command_list[i]
+
+        while command_type == "" and i < len(command_list):
+            i += 1
+            command_type = command_list[i]
+
+        command_context = text[1 + len(command_list[0]) + i + len(command_type):].strip()
     except Exception as e:
         logger.warning(f"Get command context error: {e}", exc_info=True)
 
@@ -214,12 +219,14 @@ def get_full_name(user: User, normal: bool = False) -> str:
     # Get user's full name
     text = ""
     try:
-        if user and not user.is_deleted:
-            text = user.first_name
-            if user.last_name:
-                text += f" {user.last_name}"
+        if not user or user.is_deleted:
+            return ""
 
-        if text:
+        text = user.first_name
+        if user.last_name:
+            text += f" {user.last_name}"
+
+        if text and normal:
             text = t2t(text, normal)
     except Exception as e:
         logger.warning(f"Get full name error: {e}", exc_info=True)
@@ -267,7 +274,7 @@ def get_report_record(message: Message) -> Dict[str, str]:
         "bio": "",
         "name": "",
         "from": "",
-        "joined": "",
+        "contact": "",
         "more": "",
         "unknown": ""
     }
@@ -307,8 +314,8 @@ def get_report_record(message: Message) -> Dict[str, str]:
                 record_type = "name"
             elif re.search(f"^{lang('from_name')}{lang('colon')}", r):
                 record_type = "from"
-            elif re.search(f"^{lang('joined')}{lang('colon')}", r):
-                record_type = "joined"
+            elif re.search(f"^{lang('contact')}{lang('colon')}", r):
+                record_type = "contact"
             elif re.search(f"^{lang('more')}{lang('colon')}", r):
                 record_type = "more"
             else:
@@ -321,7 +328,7 @@ def get_report_record(message: Message) -> Dict[str, str]:
     return record
 
 
-def get_text(message: Message) -> str:
+def get_text(message: Message, normal: bool = False, printable: bool = True) -> str:
     # Get message's text
     text = ""
     try:
@@ -331,6 +338,9 @@ def get_text(message: Message) -> str:
         the_text = message.text or message.caption
         if the_text:
             text += the_text
+
+        if text:
+            text = t2t(text, normal, printable)
     except Exception as e:
         logger.warning(f"Get text error: {e}", exc_info=True)
 
@@ -344,6 +354,17 @@ def lang(text: str) -> str:
         result = glovar.lang.get(text, text)
     except Exception as e:
         logger.warning(f"Lang error: {e}", exc_info=True)
+
+    return result
+
+
+def mention_id(uid: int) -> str:
+    # Get a ID mention string
+    result = ""
+    try:
+        result = general_link(f"{uid}", f"tg://user?id={uid}")
+    except Exception as e:
+        logger.warning(f"Mention id error: {e}", exc_info=True)
 
     return result
 
@@ -406,17 +427,6 @@ def thread(target: Callable, args: tuple) -> bool:
         logger.warning(f"Thread error: {e}", exc_info=True)
 
     return False
-
-
-def user_mention(uid: int) -> str:
-    # Get a mention text
-    text = ""
-    try:
-        text = general_link(f"{uid}", f"tg://user?id={uid}")
-    except Exception as e:
-        logger.warning(f"User mention error: {e}", exc_info=True)
-
-    return text
 
 
 def wait_flood(e: FloodWait) -> bool:

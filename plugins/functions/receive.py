@@ -27,7 +27,7 @@ from pyrogram import Client, InlineKeyboardButton, InlineKeyboardMarkup, Message
 from .. import glovar
 from .channel import get_debug_text, share_data
 from .etc import code, crypt_str, general_link, get_int, get_report_record, get_text, lang
-from .etc import thread, user_mention
+from .etc import mention_id, thread
 from .file import crypt_file, data_to_file, delete_file, get_new_path, get_downloaded_path, save
 from .group import get_config_text, get_message, leave_group
 from .ids import init_group_id, init_user_id
@@ -36,6 +36,30 @@ from .timers import update_admins
 
 # Enable logging
 logger = logging.getLogger(__name__)
+
+
+def receive_add_bad(sender: str, data: dict) -> bool:
+    # Receive bad users or channels that other bots shared
+    try:
+        # Basic data
+        the_id = data["id"]
+        the_type = data["type"]
+
+        # Receive bad channel
+        if sender == "MANAGE" and the_type == "channel":
+            glovar.bad_ids["channels"].add(the_id)
+
+        # Receive bad user
+        if the_type == "user":
+            glovar.bad_ids["users"].add(the_id)
+
+        save("bad_ids")
+
+        return True
+    except Exception as e:
+        logger.warning(f"Receive add bad error: {e}", exc_info=True)
+
+    return False
 
 
 def receive_add_except(client: Client, data: dict) -> bool:
@@ -64,30 +88,6 @@ def receive_add_except(client: Client, data: dict) -> bool:
         return True
     except Exception as e:
         logger.warning(f"Receive add except error: {e}", exc_info=True)
-
-    return False
-
-
-def receive_add_bad(sender: str, data: dict) -> bool:
-    # Receive bad users or channels that other bots shared
-    try:
-        # Basic data
-        the_id = data["id"]
-        the_type = data["type"]
-
-        # Receive bad channel
-        if sender == "MANAGE" and the_type == "channel":
-            glovar.bad_ids["channels"].add(the_id)
-
-        # Receive bad user
-        if the_type == "user":
-            glovar.bad_ids["users"].add(the_id)
-
-        save("bad_ids")
-
-        return True
-    except Exception as e:
-        logger.warning(f"Receive add bad error: {e}", exc_info=True)
 
     return False
 
@@ -139,7 +139,7 @@ def receive_clear_data(client: Client, data_type: str, data: dict) -> bool:
 
         # Send debug message
         text = (f"{lang('project')}{lang('colon')}{general_link(glovar.project_name, glovar.project_link)}\n"
-                f"{lang('admin_project')}{lang('colon')}{user_mention(aid)}\n"
+                f"{lang('admin_project')}{lang('colon')}{mention_id(aid)}\n"
                 f"{lang('action')}{lang('colon')}{code(lang('clear'))}\n"
                 f"{lang('more')}{lang('colon')}{code(f'{data_type} {the_type}')}\n")
         thread(send_message, (client, glovar.debug_channel_id, text))
@@ -207,7 +207,7 @@ def receive_config_show(client: Client, data: dict) -> bool:
         gid = data["group_id"]
 
         # Generate report message's text
-        result = (f"{lang('admin')}{lang('colon')}{user_mention(aid)}\n"
+        result = (f"{lang('admin')}{lang('colon')}{mention_id(aid)}\n"
                   f"{lang('action')}{lang('colon')}{code(lang('config_show'))}\n"
                   f"{lang('group_id')}{lang('colon')}{code(gid)}\n")
 
@@ -309,7 +309,7 @@ def receive_leave_approve(client: Client, data: dict) -> bool:
             return True
 
         text = get_debug_text(client, the_id)
-        text += (f"{lang('admin_project')}{lang('colon')}{user_mention(admin_id)}\n"
+        text += (f"{lang('admin_project')}{lang('colon')}{mention_id(admin_id)}\n"
                  f"{lang('status')}{lang('colon')}{code(lang('leave_approve'))}\n")
 
         if reason:
@@ -336,7 +336,7 @@ def receive_refresh(client: Client, data: int) -> bool:
 
         # Send debug message
         text = (f"{lang('project')}{lang('colon')}{general_link(glovar.project_name, glovar.project_link)}\n"
-                f"{lang('admin_project')}{lang('colon')}{user_mention(aid)}\n"
+                f"{lang('admin_project')}{lang('colon')}{mention_id(aid)}\n"
                 f"{lang('action')}{lang('colon')}{code(lang('refresh'))}\n")
         thread(send_message, (client, glovar.debug_channel_id, text))
 
@@ -397,7 +397,7 @@ def receive_regex(client: Client, message: Message, data: str) -> bool:
     return False
 
 
-def receive_remove_bad(sender: str, data: dict) -> bool:
+def receive_remove_bad(data: dict) -> bool:
     # Receive removed bad objects
     try:
         # Basic data
@@ -405,7 +405,7 @@ def receive_remove_bad(sender: str, data: dict) -> bool:
         the_type = data["type"]
 
         # Remove bad channel
-        if sender == "MANAGE" and the_type == "channel":
+        if the_type == "channel":
             glovar.bad_ids["channels"].discard(the_id)
 
         # Remove bad user
@@ -503,13 +503,15 @@ def receive_rollback(client: Client, message: Message, data: dict) -> bool:
         the_type = data["type"]
         the_data = receive_file_data(client, message)
 
-        if the_data:
-            exec(f"glovar.{the_type} = the_data")
-            save(the_type)
+        if not the_data:
+            return True
+
+        exec(f"glovar.{the_type} = the_data")
+        save(the_type)
 
         # Send debug message
         text = (f"{lang('project')}{lang('colon')}{general_link(glovar.project_name, glovar.project_link)}\n"
-                f"{lang('admin_project')}{lang('colon')}{user_mention(aid)}\n"
+                f"{lang('admin_project')}{lang('colon')}{mention_id(aid)}\n"
                 f"{lang('action')}{lang('colon')}{code(lang('rollback'))}\n"
                 f"{lang('more')}{lang('colon')}{code(the_type)}\n")
         thread(send_message, (client, glovar.debug_channel_id, text))
@@ -524,10 +526,13 @@ def receive_text_data(message: Message) -> dict:
     data = {}
     try:
         text = get_text(message)
-        if text:
-            data = loads(text)
+
+        if not text:
+            return {}
+
+        data = loads(text)
     except Exception as e:
-        logger.warning(f"Receive data error: {e}")
+        logger.warning(f"Receive text data error: {e}")
 
     return data
 
@@ -539,10 +544,12 @@ def receive_user_score(project: str, data: dict) -> bool:
         project = project.lower()
         uid = data["id"]
 
-        if init_user_id(uid):
-            score = data["score"]
-            glovar.user_ids[uid][project] = score
-            save("user_ids")
+        if not init_user_id(uid):
+            return True
+
+        score = data["score"]
+        glovar.user_ids[uid]["score"][project] = score
+        save("user_ids")
 
         return True
     except Exception as e:

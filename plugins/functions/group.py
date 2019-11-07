@@ -36,8 +36,10 @@ def delete_flood_messages(client: Client, uid: int) -> bool:
     try:
         flood = deepcopy(glovar.flood_ids[uid])
         need_delete = {}
+
         for time in flood:
             gid, mid = flood[time]
+
             if need_delete.get(gid) is None:
                 need_delete[gid] = []
 
@@ -113,6 +115,7 @@ def leave_group(client: Client, gid: int) -> bool:
     # Leave a group, clear it's data
     try:
         glovar.left_group_ids.add(gid)
+        save("left_group_ids")
         thread(leave_chat, (client, gid))
 
         glovar.admin_ids.pop(gid, None)

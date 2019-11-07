@@ -244,7 +244,7 @@ lang: Dict[str, str] = {
     "user_bio": (zh_cn and "用户简介") or "User Bio",
     "user_name": (zh_cn and "用户昵称") or "User Name",
     "from_name": (zh_cn and "来源名称") or "Forward Name",
-    "joined": (zh_cn and "入群时间") or "Joined Time",
+    "contact": (zh_cn and "联系方式") or "Contact Info",
     "more": (zh_cn and "附加信息") or "Extra Info",
     # Terminate
     "auto_ban": (zh_cn and "自动封禁") or "Auto Ban",
@@ -318,9 +318,6 @@ flood_ids: Dict[int, Dict[float, Tuple[int, int]]] = {}
 #     }
 # }
 
-left_group_ids: Set[int] = set()
-# left_group_ids = {-10012345678}
-
 locks: Dict[str, Lock] = {
     "admin": Lock(),
     "message": Lock(),
@@ -357,7 +354,7 @@ sender: str = "NOFLOOD"
 
 should_hide: bool = False
 
-version: str = "0.0.9"
+version: str = "0.1.0"
 
 # Load data from pickle
 
@@ -393,6 +390,9 @@ except_ids: Dict[str, Set[str]] = {
 # except_ids = {
 #     "long": {"content"}
 # }
+
+left_group_ids: Set[int] = set()
+# left_group_ids = {-10012345678}
 
 user_ids: Dict[int, Dict[str, Dict[Union[int, str], Union[float, int]]]] = {}
 # user_ids = {
@@ -452,7 +452,8 @@ for word_type in regex:
 # }
 
 # Load data
-file_list: List[str] = ["admin_ids", "bad_ids", "except_ids", "user_ids", "watch_ids", "configs"]
+file_list: List[str] = ["admin_ids", "bad_ids", "except_ids", "left_group_ids", "user_ids", "watch_ids",
+                        "configs"]
 file_list += [f"{f}_words" for f in regex]
 for file in file_list:
     try:

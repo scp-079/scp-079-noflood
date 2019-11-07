@@ -42,6 +42,9 @@ def init_flood_id(uid: int) -> bool:
 def init_group_id(gid: int) -> bool:
     # Init group data
     try:
+        if gid == glovar.test_group_id:
+            return False
+
         if gid in glovar.left_group_ids:
             return False
 
@@ -59,7 +62,7 @@ def init_group_id(gid: int) -> bool:
         if glovar.recorded_ids.get(gid) is None:
             glovar.recorded_ids[gid] = set()
 
-            return True
+        return True
     except Exception as e:
         logger.warning(f"Init group id {gid} error: {e}", exc_info=True)
 
