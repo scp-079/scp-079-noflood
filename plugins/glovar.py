@@ -321,6 +321,7 @@ flood_ids: Dict[int, Dict[float, Tuple[int, int]]] = {}
 locks: Dict[str, Lock] = {
     "admin": Lock(),
     "message": Lock(),
+    "receive": Lock(),
     "regex": Lock(),
     "test": Lock()
 }
