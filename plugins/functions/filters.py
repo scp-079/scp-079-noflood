@@ -19,6 +19,7 @@
 import logging
 import re
 from copy import deepcopy
+from string import ascii_lowercase
 from time import time
 from typing import Match, Optional, Union
 
@@ -450,5 +451,25 @@ def is_watch_user(user: User, the_type: str, now: int) -> bool:
             return True
     except Exception as e:
         logger.warning(f"Is watch user error: {e}", exc_info=True)
+
+    return False
+
+
+def is_wb_text(text: str, ocr: bool) -> bool:
+    # Check if the text is wb text
+    try:
+        if (is_regex_text("wb", text, ocr)
+                or is_regex_text("ad", text, ocr)
+                or is_regex_text("iml", text, ocr)
+                or is_regex_text("pho", text, ocr)
+                or is_regex_text("sho", text, ocr)
+                or is_regex_text("spc", text, ocr)):
+            return True
+
+        for c in ascii_lowercase:
+            if is_regex_text(f"ad{c}", text, ocr):
+                return True
+    except Exception as e:
+        logger.warning(f"Is wb text error: {e}", exc_info=True)
 
     return False

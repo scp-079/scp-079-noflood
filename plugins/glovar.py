@@ -22,6 +22,7 @@ from configparser import RawConfigParser
 from os import mkdir
 from os.path import exists
 from shutil import rmtree
+from string import ascii_lowercase
 from threading import Lock
 from typing import Dict, List, Set, Tuple, Union
 
@@ -346,16 +347,22 @@ recorded_ids: Dict[int, Set[int]] = {}
 # }
 
 regex: Dict[str, bool] = {
-    "wb": True,
-    "spc": False,
-    "spe": False
+    "ad": True,
+    "iml": True,
+    "pho": True,
+    "sho": True,
+    "spc": True,
+    "wb": True
 }
+
+for c in ascii_lowercase:
+    regex[f"ad{c}"] = True
 
 sender: str = "NOFLOOD"
 
 should_hide: bool = False
 
-version: str = "0.1.0"
+version: str = "0.1.1"
 
 # Load data from pickle
 
