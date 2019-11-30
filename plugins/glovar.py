@@ -352,6 +352,7 @@ regex: Dict[str, bool] = {
     "pho": True,
     "sho": True,
     "spc": True,
+    "spe": False,
     "wb": True
 }
 
