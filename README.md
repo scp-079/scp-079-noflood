@@ -4,7 +4,9 @@ This bot is used to prevent message-flooding.
 
 ## How to use
 
-See [this article](https://scp-079.org/noflood/).
+- See the [manual](https://telegra.ph/SCP-079-NOFLOOD-12-04)
+- See [this article](https://scp-079.org/noflood/) to build a bot by yourself
+- Discuss [group](https://t.me/SCP_079_CHAT)
 
 ## To Do List
 
