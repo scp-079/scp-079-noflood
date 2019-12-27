@@ -21,7 +21,7 @@ from typing import Iterable, List, Optional, Union
 
 from pyrogram import Chat, ChatMember, ChatPermissions, ChatPreview, Client, InlineKeyboardMarkup, Message
 from pyrogram.errors import ChatAdminRequired, ButtonDataInvalid, ChannelInvalid, ChannelPrivate, FloodWait
-from pyrogram.errors import PeerIdInvalid
+from pyrogram.errors import MessageDeleteForbidden, PeerIdInvalid
 
 from .. import glovar
 from .etc import delay, wait_flood
@@ -46,6 +46,8 @@ def delete_messages(client: Client, cid: int, mids: Iterable[int]) -> Optional[b
                     except FloodWait as e:
                         flood_wait = True
                         wait_flood(e)
+            except MessageDeleteForbidden:
+                return False
             except Exception as e:
                 logger.warning(f"Delete message {mids} in {cid} for loop error: {e}", exc_info=True)
     except Exception as e:
