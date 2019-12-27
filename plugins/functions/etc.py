@@ -328,7 +328,7 @@ def get_report_record(message: Message) -> Dict[str, str]:
     return record
 
 
-def get_text(message: Message, normal: bool = False, printable: bool = True) -> str:
+def get_text(message: Message, normal: bool = False, printable: bool = False) -> str:
     # Get message's text
     text = ""
     try:
