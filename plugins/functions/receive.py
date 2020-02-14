@@ -1,5 +1,5 @@
 # SCP-079-NOFLOOD - Message-flooding prevention
-# Copyright (C) 2019 SCP-079 <https://scp-079.org>
+# Copyright (C) 2019-2020 SCP-079 <https://scp-079.org>
 #
 # This file is part of SCP-079-NOFLOOD.
 #
@@ -72,10 +72,12 @@ def receive_add_except(client: Client, data: dict) -> bool:
         # Receive except content
         if the_type in {"long"}:
             message = get_message(client, glovar.logging_channel_id, the_id)
+
             if not message:
                 return True
 
             record = get_report_record(message)
+
             if lang("name") in record["rule"]:
                 if record["name"]:
                     glovar.except_ids["long"].add(record["name"])
@@ -353,15 +355,18 @@ def receive_regex(client: Client, message: Message, data: str) -> bool:
     try:
         file_name = data
         word_type = file_name.split("_")[0]
+
         if word_type not in glovar.regex:
             return True
 
         words_data = receive_file_data(client, message)
+
         if not words_data:
             return True
 
         pop_set = set(eval(f"glovar.{file_name}")) - set(words_data)
         new_set = set(words_data) - set(eval(f"glovar.{file_name}"))
+
         for word in pop_set:
             eval(f"glovar.{file_name}").pop(word, 0)
 
@@ -374,6 +379,7 @@ def receive_regex(client: Client, message: Message, data: str) -> bool:
         if file_name in {"spc_words", "spe_words"}:
             special = file_name.split("_")[0]
             exec(f"glovar.{special}_dict = {{}}")
+
             for rule in words_data:
                 # Check keys
                 if "[" not in rule:
@@ -385,6 +391,7 @@ def receive_regex(client: Client, message: Message, data: str) -> bool:
 
                 keys = rule.split("]")[0][1:]
                 value = rule.split("?#")[1][1]
+
                 for k in keys:
                     eval(f"glovar.{special}_dict")[k] = value
 
@@ -436,10 +443,12 @@ def receive_remove_except(client: Client, data: dict) -> bool:
         # Receive except content
         if the_type in {"long"}:
             message = get_message(client, glovar.logging_channel_id, the_id)
+
             if not message:
                 return True
 
             record = get_report_record(message)
+
             if lang("name") in record["rule"]:
                 if record["name"]:
                     glovar.except_ids["long"].discard(record["name"])

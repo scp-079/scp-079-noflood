@@ -1,5 +1,5 @@
 # SCP-079-NOFLOOD - Message-flooding prevention
-# Copyright (C) 2019 SCP-079 <https://scp-079.org>
+# Copyright (C) 2019-2020 SCP-079 <https://scp-079.org>
 #
 # This file is part of SCP-079-NOFLOOD.
 #
@@ -55,6 +55,7 @@ def config(client: Client, message: Message) -> bool:
 
         # Check command format
         command_type = get_command_type(message)
+
         if not command_type or not re.search(f"^{glovar.sender}$", command_type, re.I):
             return True
 
@@ -132,6 +133,7 @@ def config_directly(client: Client, message: Message) -> bool:
 
         # Check command format
         command_type, command_context = get_command_context(message)
+
         if command_type:
             if command_type == "show":
                 text += f"{lang('action')}{lang('colon')}{code(lang('config_show'))}\n"
@@ -157,6 +159,7 @@ def config_directly(client: Client, message: Message) -> bool:
                                 reason = lang("command_para")
                         elif command_type == "limit":
                             limit = get_int(command_context)
+
                             if 2 <= limit <= 20:
                                 new_config["limit"] = limit
                             else:
@@ -164,6 +167,7 @@ def config_directly(client: Client, message: Message) -> bool:
                                 reason = lang("command_para")
                         elif command_type == "time":
                             time = get_int(command_context)
+
                             if 5 <= time <= 60 and time in set(range(5, 65, 5)):
                                 new_config["time"] = time
                             else:

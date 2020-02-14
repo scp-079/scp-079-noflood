@@ -1,5 +1,5 @@
 # SCP-079-NOFLOOD - Message-flooding prevention
-# Copyright (C) 2019 SCP-079 <https://scp-079.org>
+# Copyright (C) 2019-2020 SCP-079 <https://scp-079.org>
 #
 # This file is part of SCP-079-NOFLOOD.
 #
@@ -159,10 +159,12 @@ def forward_evidence(client: Client, message: Message, level: str, rule: str, th
 
         if lang("name") in rule:
             name = get_full_name(message.from_user)
+
             if name:
                 text += f"{lang('user_name')}{lang('colon')}{code(name)}\n"
 
             forward_name = get_forward_name(message)
+
             if forward_name and forward_name != name:
                 text += f"{lang('from_name')}{lang('colon')}{code(forward_name)}\n"
 

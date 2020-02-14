@@ -1,5 +1,5 @@
 # SCP-079-NOFLOOD - Message-flooding prevention
-# Copyright (C) 2019 SCP-079 <https://scp-079.org>
+# Copyright (C) 2019-2020 SCP-079 <https://scp-079.org>
 #
 # This file is part of SCP-079-NOFLOOD.
 #
@@ -103,6 +103,7 @@ def get_message(client: Client, gid: int, mid: int) -> Optional[Message]:
     try:
         mids = [mid]
         result = get_messages(client, gid, mids)
+
         if result:
             result = result[0]
     except Exception as e:
@@ -121,8 +122,14 @@ def leave_group(client: Client, gid: int) -> bool:
         glovar.admin_ids.pop(gid, None)
         save("admin_ids")
 
+        glovar.trust_ids.pop(gid, set())
+        save("trust_ids")
+
         glovar.configs.pop(gid, None)
         save("configs")
+
+        glovar.declared_message_ids.pop(gid, set())
+        glovar.recorded_ids.pop(gid, set())
 
         return True
     except Exception as e:

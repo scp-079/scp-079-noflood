@@ -1,5 +1,5 @@
 # SCP-079-NOFLOOD - Message-flooding prevention
-# Copyright (C) 2019 SCP-079 <https://scp-079.org>
+# Copyright (C) 2019-2020 SCP-079 <https://scp-079.org>
 #
 # This file is part of SCP-079-NOFLOOD.
 #
@@ -36,6 +36,7 @@ def delete_messages(client: Client, cid: int, mids: Iterable[int]) -> Optional[b
     try:
         mids = list(mids)
         mids_list = [mids[i:i + 100] for i in range(0, len(mids), 100)]
+
         for mids in mids_list:
             try:
                 flood_wait = True
@@ -121,6 +122,7 @@ def get_group_info(client: Client, chat: Union[int, Chat], cache: bool = True) -
     try:
         if isinstance(chat, int):
             the_cache = glovar.chats.get(chat)
+
             if the_cache:
                 chat = the_cache
             else:

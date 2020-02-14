@@ -1,5 +1,5 @@
 # SCP-079-NOFLOOD - Message-flooding prevention
-# Copyright (C) 2019 SCP-079 <https://scp-079.org>
+# Copyright (C) 2019-2020 SCP-079 <https://scp-079.org>
 #
 # This file is part of SCP-079-NOFLOOD.
 #
@@ -34,6 +34,7 @@ def flood_test(client: Client, message: Message) -> bool:
     # Test message's flood status
     try:
         origin_text = get_text(message)
+
         if re.search(f"^{lang('admin')}{lang('colon')}[0-9]", origin_text):
             return True
         else:

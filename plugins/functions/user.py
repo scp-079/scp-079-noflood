@@ -1,5 +1,5 @@
 # SCP-079-NOFLOOD - Message-flooding prevention
-# Copyright (C) 2019 SCP-079 <https://scp-079.org>
+# Copyright (C) 2019-2020 SCP-079 <https://scp-079.org>
 #
 # This file is part of SCP-079-NOFLOOD.
 #
@@ -130,6 +130,7 @@ def terminate_user(client: Client, message: Message, context: str) -> bool:
                 the_time=the_time,
                 the_count=the_count
             )
+
             if result:
                 add_bad_user(client, uid)
                 ban_user(client, gid, uid)
@@ -153,6 +154,7 @@ def terminate_user(client: Client, message: Message, context: str) -> bool:
                 the_time=the_time,
                 the_count=the_count
             )
+
             if result:
                 add_bad_user(client, uid)
                 ban_user(client, gid, uid)
@@ -178,6 +180,7 @@ def terminate_user(client: Client, message: Message, context: str) -> bool:
                 the_count=the_count,
                 score=score
             )
+
             if result:
                 add_bad_user(client, uid)
                 ban_user(client, gid, uid)
@@ -201,6 +204,7 @@ def terminate_user(client: Client, message: Message, context: str) -> bool:
                 the_time=the_time,
                 the_count=the_count
             )
+
             if result:
                 add_watch_user(client, "ban", uid, now)
                 delete_message(client, gid, mid)
@@ -229,6 +233,7 @@ def terminate_user(client: Client, message: Message, context: str) -> bool:
                 the_time=the_time,
                 the_count=the_count
             )
+
             if result:
                 glovar.recorded_ids[gid].add(uid)
                 delete_message(client, gid, mid)
