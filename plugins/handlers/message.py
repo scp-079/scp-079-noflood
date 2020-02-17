@@ -348,6 +348,12 @@ def process_data(client: Client, message: Message) -> bool:
                         if data == "ask":
                             send_count(client)
 
+            elif sender == "USER":
+
+                if action == "add":
+                    if action_type == "bad":
+                        receive_add_bad(sender, data)
+
             elif sender == "WARN":
 
                 if action == "update":
