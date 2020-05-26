@@ -24,8 +24,8 @@ from .. import glovar
 from ..functions.channel import get_debug_text
 from ..functions.etc import code, general_link, lang, mention_id, thread
 from ..functions.file import save
-from ..functions.filters import authorized_group, class_c, class_d, class_e, exchange_channel, from_user, hide_channel
-from ..functions.filters import is_flood_message, new_group, test_group
+from ..functions.filters import aio, authorized_group, class_c, class_d, class_e, exchange_channel, from_user
+from ..functions.filters import hide_channel, is_flood_message, new_group, test_group
 from ..functions.group import leave_group
 from ..functions.ids import init_group_id
 from ..functions.receive import receive_add_bad, receive_add_except, receive_clear_data, receive_config_commit
@@ -182,7 +182,7 @@ def init_group(client: Client, message: Message) -> bool:
     return False
 
 
-@Client.on_message((Filters.incoming or glovar.aio) & Filters.channel
+@Client.on_message((Filters.incoming | aio) & Filters.channel
                    & ~Filters.command(glovar.all_commands, glovar.prefix)
                    & exchange_channel)
 def process_data(client: Client, message: Message) -> bool:
