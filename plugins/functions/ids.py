@@ -28,15 +28,19 @@ logger = logging.getLogger(__name__)
 
 def init_flood_id(uid: int) -> bool:
     # Init flood data
-    try:
-        if glovar.flood_ids.get(uid) is None:
-            glovar.flood_ids[uid] = {}
+    result = False
 
-        return True
+    try:
+        if glovar.flood_ids.get(uid):
+            return True
+
+        glovar.flood_ids[uid] = {}
+
+        result = True
     except Exception as e:
         logger.warning(f"Init flood id error: {e}", exc_info=True)
 
-    return False
+    return result
 
 
 def init_group_id(gid: int) -> bool:

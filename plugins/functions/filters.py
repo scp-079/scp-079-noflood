@@ -349,6 +349,8 @@ def is_detected_user_id(gid: int, uid: int, now: int) -> bool:
 
 def is_flood_message(message: Message, test: bool = False) -> str:
     # Check if the message is flooding message
+    result = ""
+
     try:
         if not message.chat:
             return ""
@@ -375,8 +377,7 @@ def is_flood_message(message: Message, test: bool = False) -> str:
         glovar.flood_ids[uid][now] = (gid, mid)
 
         for t in list(glovar.flood_ids[uid]):
-            if now - t > 60:
-                glovar.flood_ids[uid].pop(t, (0, 0))
+            now - t > 60 and glovar.flood_ids[uid].pop(t, (0, 0))
 
         # Get the config
         if test:
@@ -390,8 +391,7 @@ def is_flood_message(message: Message, test: bool = False) -> str:
         user_flood = deepcopy(glovar.flood_ids[uid])
 
         for t in list(user_flood):
-            if now - t > flood_time:
-                user_flood.pop(t, (0, 0))
+            now - t > flood_time and user_flood.pop(t, (0, 0))
 
         # Check the flood status
         user_count = len(user_flood)
@@ -400,12 +400,14 @@ def is_flood_message(message: Message, test: bool = False) -> str:
             return f"{flood_time} {user_count}"
 
         # If the user is being punished
-        if is_detected_user(message):
-            return f"true true"
+        if not is_detected_user(message):
+            return ""
+
+        return f"true true"
     except Exception as e:
         logger.warning(f"Is flood message error: {e}", exc_info=True)
 
-    return ""
+    return result
 
 
 def is_high_score_user(user: User) -> float:

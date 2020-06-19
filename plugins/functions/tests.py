@@ -32,24 +32,26 @@ logger = logging.getLogger(__name__)
 
 def flood_test(client: Client, message: Message) -> bool:
     # Test message's flood status
+    result = False
+
     try:
         origin_text = get_text(message)
 
         if re.search(f"^{lang('admin')}{lang('colon')}[0-9]", origin_text):
-            return True
+            return False
         else:
             aid = message.from_user.id
 
         if not is_flood_message(message, True):
-            return True
+            return False
 
         # Send the result
         text = (f"{lang('admin')}{lang('colon')}{mention_id(aid)}\n\n"
                 f"{lang('flood_message')}{lang('colon')}{code('True')}\n")
         thread(send_message, (client, glovar.test_group_id, text, message.message_id))
 
-        return True
+        result = True
     except Exception as e:
         logger.warning(f"Flood test error: {e}", exc_info=True)
 
-    return False
+    return result
