@@ -231,7 +231,8 @@ def terminate_user(client: Client, message: Message, context: str) -> bool:
                 level=lang("auto_delete"),
                 rule=lang("rule_custom"),
                 the_time=the_time,
-                the_count=the_count
+                the_count=the_count,
+                general=False
             )
 
             if result:

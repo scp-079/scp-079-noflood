@@ -64,6 +64,7 @@ debug_channel_id: int = 0
 exchange_channel_id: int = 0
 hide_channel_id: int = 0
 logging_channel_id: int = 0
+noflood_channel_id: int = 0
 test_group_id: int = 0
 
 # [custom]
@@ -109,6 +110,7 @@ try:
     exchange_channel_id = int(config["channels"].get("exchange_channel_id", str(exchange_channel_id)))
     hide_channel_id = int(config["channels"].get("hide_channel_id", str(hide_channel_id)))
     logging_channel_id = int(config["channels"].get("logging_channel_id", str(logging_channel_id)))
+    noflood_channel_id = int(config["channels"].get("noflood_channel_id", str(noflood_channel_id)))
     test_group_id = int(config["channels"].get("test_group_id", str(test_group_id)))
 
     # [custom]

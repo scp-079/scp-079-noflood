@@ -130,10 +130,17 @@ def format_data(sender: str, receivers: List[str], action: str, action_type: str
 
 
 def forward_evidence(client: Client, message: Message, level: str, rule: str, the_time: str, the_count: str,
-                     score: float = 0.0, more: str = None) -> Optional[Union[bool, Message]]:
+                     score: float = 0.0, more: str = None, general: bool = True) -> Optional[Union[bool, Message]]:
     # Forward the message to the logging channel as evidence
     result = None
+    
     try:
+        # Get channel id
+        channel_id = glovar.logging_channel_id if general else glovar.noflood_channel_id
+
+        if not glovar.noflood_channel_id:
+            channel_id = glovar.logging_channel_id
+        
         # Basic information
         uid = message.from_user.id
         text = (f"{lang('project')}{lang('colon')}{code(glovar.sender)}\n"
@@ -184,7 +191,7 @@ def forward_evidence(client: Client, message: Message, level: str, rule: str, th
                 or message.voice
                 or message.game
                 or message.service):
-            result = send_message(client, glovar.logging_channel_id, text)
+            result = send_message(client, channel_id, text)
             return result
 
         flood_wait = True
@@ -192,7 +199,7 @@ def forward_evidence(client: Client, message: Message, level: str, rule: str, th
             flood_wait = False
             try:
                 result = message.forward(
-                    chat_id=glovar.logging_channel_id,
+                    chat_id=channel_id,
                     disable_notification=True
                 )
             except FloodWait as e:
@@ -203,7 +210,7 @@ def forward_evidence(client: Client, message: Message, level: str, rule: str, th
                 return False
 
         result = result.message_id
-        result = send_message(client, glovar.logging_channel_id, text, result)
+        result = send_message(client, channel_id, text, result)
     except Exception as e:
         logger.warning(f"Forward evidence error: {e}", exc_info=True)
 
